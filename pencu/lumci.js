@@ -45,11 +45,8 @@ function fixDefinitions(definitions) {
     var scaryWords = ['selbengo', 'krefu', 'plikai', 'selbeika\'e', 'xelfanvyxelfanva'];
 
     for (var i = 0; i < definitions.length; i++) {
-        var entry = definitions[i];
-        var oldDef = entry.d;
-        if (/\$/.test(oldDef) && Math.random() < 0.01 || scaryWords.indexOf(entry.w) !== -1) {
-            entry.d = fixDefinition(oldDef);
-            console.log("puzi lumci zo " + entry.w);
-        }
+        var w = definitions[i].w;
+        var oldDef = definitions[i].d;
+        definitions[i].d = fixDefinition(oldDef);
     }
 }
