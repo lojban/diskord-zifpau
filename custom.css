@@ -1,0 +1,42 @@
+.markup, .channel-textarea-inner textarea {
+    color: white !important;
+    font-size: 1.5em !important;
+}
+
+.messages, .comment { padding-bottom: 1em; }
+
+.invite { display: none; }
+
+.guild-channels header {
+    margin: 1em;
+}
+
+.markup a, .inline {
+    color: #6EC390 !important;
+}
+
+
+.inline {
+    background-color: transparent !important;
+    font-family: monospace !important;
+    font-size: 1.1em !important;
+    max-width: 300px !important;
+}
+
+.emoji {
+    vertical-align: -1px !important;
+}
+
+
+.inline {
+    background-color: transparent !important;
+    font-family: monospace !important;
+    font-size: 1.1em !important;
+}
+
+.tooltip {
+    background-color:rgba(0, 0, 0, 1.0) !important;
+    opacity: 100% !important;
+    font-size: 1.5em !important;
+    max-width: 500px !important;
+}
