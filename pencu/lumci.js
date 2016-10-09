@@ -1,4 +1,4 @@
-function fixDefinition(def) {
+fixDefinition = function(def) {
   if (/;/.test(def)) {
     // split at ; and recombine
     return def.split(';').map(fixDefinition).join(';');
@@ -39,11 +39,11 @@ function fixDefinition(def) {
     x_index += 1;
   }
   return def;
-}
+};
 
-function fixDefinitions(definitions) {
+fixDefinitions = function(definitions) {
     for (var i = 0; i < definitions.length; i++) {
         var w = definitions[i].w;
         definitions[i].d = fixDefinition(definitions[i].d;);
     }
-}
+};
