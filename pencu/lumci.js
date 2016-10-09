@@ -42,11 +42,8 @@ function fixDefinition(def) {
 }
 
 function fixDefinitions(definitions) {
-    var scaryWords = ['selbengo', 'krefu', 'plikai', 'selbeika\'e', 'xelfanvyxelfanva'];
-
     for (var i = 0; i < definitions.length; i++) {
         var w = definitions[i].w;
-        var oldDef = definitions[i].d;
-        definitions[i].d = fixDefinition(oldDef);
+        definitions[i].d = fixDefinition(definitions[i].d;);
     }
 }
