@@ -4,6 +4,8 @@
 [BetterDiscord](https://betterdiscord.net/home/), which is a
 customizable front-end for the [Discord](https://discordapp.com/) chat client.
 
+![UI Screenshot](https://github.com/suzanys/diskord-zifpau/blob/master/static/ui_screenshot.png)
+
 ## Installation Instructions for Ubuntu Linux
 
 ### Remove Any Existing Discord Installation
