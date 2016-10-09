@@ -97,7 +97,7 @@ Let's install! Finally!
 
 ## Installation Instructions for Mac OSX
 
-I don't own a Mac, but you can try to install this and then add the
+You can try to install this and then add the
 configuration files by hand.
 
 ```
@@ -132,7 +132,7 @@ http://pastebin.com/uNTZK0M2
 
 ## Installation Instructions for Windows
 
-I don't have Windows, but install through their main website since
+Install through their main website since
 Windows is officially supported and add the configuration files by
 hand.
 
