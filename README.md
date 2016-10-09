@@ -70,7 +70,7 @@ symbolic linking.
 Let's grab BetterDiscord using `git`.
 
 ```
-> git clone https://github.com/diskord-zifpau/BetterDiscordApp.git
+> git clone https://github.com/Jiiks/BetterDiscordApp.git
 ```
 
 Move some stuff around.
@@ -88,7 +88,22 @@ Let's install! Finally!
 > sudo ./install.sh
 ```
 
-### Uninstalling diskord-zifpau
+### Adding diskord-zifpau Configuration Files
+
+```
+https://github.com/Jiiks/BetterDiscordApp/releases/download/0.2.82/BD0.2.82Windows.zip
+```
+Here is the custom CSS file. Open Discord and open
+your user settings menu by click on the gear icon by your profile
+picture. Click on the "BetterDiscord" tab, then click on the "Custom
+CSS" tab. Add the contents of this file:
+
+```
+http://pastebin.com/uNTZK0M2
+```
+
+
+### Uninstalling diskord-zifpau (should you want to)
 
 ```
 > sudo rm -f $(which discord)
