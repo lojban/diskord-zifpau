@@ -68,7 +68,7 @@ symbolic linking.
 ### Installing diskord-zifpau
 
 Let's grab BetterDiscord using `git`.
-p
+
 ```
 > git clone https://github.com/diskord-zifpau/BetterDiscordApp.git
 ```
