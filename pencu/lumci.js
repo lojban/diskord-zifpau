@@ -44,6 +44,6 @@ fixDefinition = function(def) {
 fixDefinitions = function(definitions) {
     for (var i = 0; i < definitions.length; i++) {
         var w = definitions[i].w;
-        definitions[i].d = fixDefinition(definitions[i].d;);
+        definitions[i].d = fixDefinition(definitions[i].d);
     }
 };
