@@ -67,17 +67,20 @@ var pencu = function () {};
             var gismu = $(this);
             gismu.replaceWith(document.createTextNode(gismu.attr("alt")));
         });
-        console.log("la pemcu ku sisti");
+        console.log("la pencu ku sisti");
     };
 
-    function makeSelpehu (valsi) {
+    function makeSelpehu (valsi, text) {
         var cleaned = valsi.replace(/[^\w']/g, '');
+        if (text == undefined) {
+            text = valsi;
+        }
         var selpehu = $("<a>", {
             href: "http://vlasisku.lojban.org/vlasisku/" + cleaned,
-            class: "pemcu-atki",
+            class: "pencu-atki",
             target: "_blank",
             title: getDefinition(cleaned),
-            text: valsi,
+            text: text,
         }).prop('outerHTML');
         return selpehu.toString();
     };
@@ -141,7 +144,7 @@ var pencu = function () {};
     }
 
     pencu.prototype.start = function () {
-        console.log("la pemcu ku tolsti")
+        console.log("la pencu ku tolsti")
     };
 
     function updateToken(tokens, i, token) {
@@ -153,51 +156,102 @@ var pencu = function () {};
 
             var parts = []; // each token may contain multiple adjacent valsi
             for (var k=0; k<parse.length; k++) {
+                var valsi = parse[k][1];
                 var selmaho = parse[k][0];
                 // don't handle cmevla or fu'ivla
                 if (selmaho == "cmevla") {
                     throw selmaho;
-                }
-                if (selmaho == "fu'ivla") {
+                } else if (selmaho == "fu'ivla") {
                     throw selmaho;
+                } else if (selmaho == "lujvo") {
+                    var rafsi = valsi.split("-");
+                    for (var j=0; j<rafsi.length; j++) {
+                        rafsi[j] = rafsi[j].replace("r", "");
+                    }
+                    for (var j=0; j<rafsi.length; j++) {
+                        var current_rafsi = rafsi[j];
+                        var entries = definitions.filter(function(o) {
+                            return (o.r != undefined &&
+                                    o.r.indexOf(current_rafsi) > -1);
+                        });
+                        if (entries.length > 0) {
+                            var gismu = entries[0].w;
+                            if (j > 0) {
+                                var prev_rafsi = rafsi[j - 1];
+                                var exp = prev_rafsi + "(.)" + current_rafsi;
+                                var pattern = new RegExp(exp, 'g');
+                                var match = pattern.exec(token);
+                                if (match != null && match.length > 1) {
+                                    parts.push(match[1]);
+                                }
+                            }
+                            parts.push(makeSelpehu(gismu, current_rafsi));
+                        }
+                    }
+                } else {
+                    parts.push(makeSelpehu(valsi));
                 }
-                var valsi = parse[k][1];
-                console.log("Valsi: " + valsi);
-                parts.push(makeSelpehu(valsi));
             }
             var result = parts.join("");
             tokens[i] = result;
         } catch (err) {
+            console.log("ERROR:");
+            console.log(err);
             tokens[i] = escapeHtml(tokens[i]);
         }
     };
 
-    pencu.prototype.observer = function (e) {
-        var messages = mutationFind(e, ".message-content").not(":has(.pemcu-atki)");
-        if (messages.length == 0) {
-            messages = mutationFind(e, ".message-text").not(":has(.pemcu-atki)");
+    function processText(text) {
+        // skip empty messagesa
+        if ($.trim(text) == '') {
+            return text;
         }
+        // split the message on whitespace into tokens
+        var tokens = text.split(/(\S+)/g)
+        // bail if there are no tokens
+        if (tokens == null) {
+            return text;
+        }
+        // update each token
+        $.each(tokens, function(i, token) {
+            updateToken(tokens, i, token);
+        });
+        // update message with new tokens
+        var result = tokens.join("");
+        return result;
+    }
+
+    function getMessages(mutation) {
+        var messages = mutationFind(mutation, ".message-content").not(":has(.pencu-atki)");
+        // if (messages.length == 0) {
+        //     // this is needed because the DOM on OSX is subtlely different
+        //     messages = mutationFind(mutation, ".message-text").not(":has(.pencu-atki)");
+        // }
+        return messages;
+    };
+
+    pencu.prototype.observer = function (mutation) {
+        var messages = getMessages(mutation);
         messages.each(function() {
-            // dont update this message again
-            $(this).addClass("pemcu-atki");
-            // skip empty messagesa
-            var text = $(this).text();
-            if ($.trim(text) == '') {
+            var $this = $(this);
+            if ($this.hasClass('pencu-atki')) {
                 return;
             }
-            // split the message on whitespace into tokens
-            var tokens = text.split(/(\S+)/g)
-            // bail if there are no tokens
-            if (tokens == null) {
-                return;
+            $this.addClass('pencu-atki');
+            var contents = $this.contents();
+            var new_contents = [];
+            for (var i=0; i<contents.length; i++) {
+                var child = contents[i];
+                if (child.nodeName == "#text") {
+                    new_contents.push(processText(child.textContent));
+                } else if (child.nodeName != "#comment") {
+                    new_contents.push($(child).html());
+                }
+
             }
-            // update each token
-            $.each(tokens, function(i, e) { updateToken(tokens, i, e); });
-            // update message with new tokens
-            $(this).html(tokens.join(""));
+            $this.html(new_contents.join(""));
         });
         messages.setupVinpa();
-
     };
 
 })();
