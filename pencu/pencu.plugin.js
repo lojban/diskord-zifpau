@@ -174,6 +174,9 @@ var pencu = function () {};
 
     pencu.prototype.observer = function (e) {
         var messages = mutationFind(e, ".message-content").not(":has(.pemcu-atki)");
+        if (messages.length == 0) {
+            messages = mutationFind(e, ".message-text").not(":has(.pemcu-atki)");
+        }
         messages.each(function() {
             // dont update this message again
             $(this).addClass("pemcu-atki");
