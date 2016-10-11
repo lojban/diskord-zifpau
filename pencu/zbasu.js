@@ -205,5 +205,6 @@
         });
         messages.setupVinpa();
     };
+    console.log("zbasu loaded!");
 
 })();
