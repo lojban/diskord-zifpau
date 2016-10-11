@@ -38,7 +38,7 @@ var pencu = function() {};
         var load = function() {
             if (helpers.length) {
                 var next_helper = helpers.shift();
-                $.getScript(next_helper, handler);
+                $.getScript(next_helper, load);
             } else {
                 fixDefinitions(definitions);
                 initJQueryPlugins($);
