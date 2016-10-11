@@ -182,6 +182,7 @@
     };
 
     pencu.prototype.observer = function(mutation) {
+        console.log("Mutation observed");
         var messages = getMessages(mutation);
         messages.each(function() {
             var $this = $(this);
@@ -205,4 +206,4 @@
         messages.setupVinpa();
     };
 
-})
+})();
