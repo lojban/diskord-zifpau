@@ -1,7 +1,5 @@
 //META{"name":"pencu"}*//
 
-
-
 var pencu = function() {};
 
 (function() {
@@ -38,11 +36,8 @@ var pencu = function() {};
         var load = function() {
             if (helpers.length) {
                 var next_helper = helpers.shift();
-                $.getScript(next_helper, load);
-            } else {
-                fixDefinitions(definitions);
-                initJQueryPlugins($);
-                console.log("la pencu ku tolcanci");
+                console.log("Downloading " + next_helper);
+                $.getScript(async_url + next_helper, load);
             }
         }
 
@@ -53,7 +48,7 @@ var pencu = function() {};
         console.log("la pencu ku canci");
     };
 
-   pencu.prototype.start = function() {
+    pencu.prototype.start = function() {
         console.log("la pencu ku tolsti");
     };
 
@@ -61,3 +56,4 @@ var pencu = function() {};
     pencu.prototype.stop = function() { /* override */ };
 
 })();
+

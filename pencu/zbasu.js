@@ -1,3 +1,4 @@
+
 (function() {
     var entityMap = {
         "&": "&amp;",
@@ -32,179 +33,218 @@
         return mutated.add(descendants);
     }
 
-    function makeSelpehu(valsi, text) {
-        var cleaned = valsi.replace(/[^\w']/g, '');
-        if (text == undefined) {
-            text = valsi;
-        }
-        var selpehu = $("<a>", {
-            href: "http://vlasisku.lojban.org/vlasisku/" + cleaned,
-            class: "pencu-atki",
-            target: "_blank",
-            title: getDefinition(cleaned),
-            text: text,
-        }).prop('outerHTML');
-        return selpehu.toString();
+    function positionVinpa(vinpa, selpehu) {
+        // Position the tooltip
+        var position = selpehu.offset();
+        position.top -= vinpa.height() + 20;
+        position.left += selpehu.width() / 2 - vinpa.width() / 2 - 10;
+        vinpa.offset(position);
     };
 
-    function makeVinpa(content) {
+    function makeVinpa(selpehu) {
         // Create and insert tooltip
         var vinpa = $("<div>")
-            .append(content)
+            .append(selpehu.attr('title'))
             .addClass("tooltip tooltip-top tooltip-normal");
+        selpehu.attr('data-title', selpehu.attr('title'));
+        selpehu.removeAttr('title');
+        $(".tooltips").append(vinpa);
+        positionVinpa(vinpa, selpehu);
         return vinpa;
-    }
+    };
 
-    function positionVinpa(pencu, vinpa) {
-        // Position the tooltip
-        var position = pencu.offset();
-        position.top -= vinpa.height() + 20;
-        position.left += pencu.width() / 2 - vinpa.width() / 2 - 10;
-        vinpa.offset(position);
-    }
+    function showVinpa() {
+        // `this` is a selpehu
+        var vinpa = makeVinpa($(this));
+        // Set a handler to destroy the tooltip
+        $(this).on("mouseout.pencu-vinpa", function() {
+            $(this).off("mouseout.pencu-vinpa");
+            $(this).attr('title', $(this).attr('data-title'));
+            $(this).removeAttr('data-title');
+            vinpa.remove();
+        });
+    };
+
+    var setupVinpa = function() {
+        // `this` is a selpehu
+        $(this)
+            .not(':has(.pencu-vinpa)')
+            .addClass('pencu-vinpa')
+            .on("mouseover.pencu-vinpa", showVinpa);
+    };
 
     function initJQueryPlugins($) {
         $.fn.setupVinpa = function() {
             // find children with a title attribute
-            return this.find("[title]").each(function() {
-                // grab the title
-                var title = $(this).attr("title");
-                // add marker class and remove title
-                $(this).addClass("pencu-vinpa").removeAttr("title");
-                $(this).on("mouseover.pencu-vinpa", function() {
-                    var vinpa = makeVinpa(title);
-                    $(".tooltips").append(vinpa);
-                    positionVinpa($(this), vinpa);
-                    // Set a handler to destroy the tooltip
-                    $(this).on("mouseout.pencu-vinpa", function() {
-                        // remove this handler
-                        $(this).off("mouseout.pencu-vinpa");
-                        vinpa.remove();
-                    });
-                });
-            });
+            // not already setup with a vinpa
+            return this
+                .not(':has(.pencu-vinpa)')
+                .each(setupVinpa);
         };
     }
 
+    function makeSelpehu(valsi, text) {
+        if (text == undefined) {
+            text = valsi;
+        }
 
-    function updateToken(tokens, i, token) {
-        try {
-            // parse a token into lojban
-            var parse = camxes.parse(token.replace(/[^\w'\.]/g, ''));
-            // bail if no parse possible
-            if (parse.length === 0) {
-                return;
-            }
+        var cleaned = valsi.replace(/[^\w']/g, '');
+        var selpehu = $("<a>", {
+            href: "http://vlasisku.lojban.org/vlasisku/" + cleaned,
+            class: "pencu-selpehu",
+            target: "_blank",
+            title: getDefinition(cleaned),
+            text: text,
+        }).prop('outerHTML');
+        return selpehu;
+    };
 
-            var parts = []; // each token may contain multiple adjacent valsi
-            for (var k = 0; k < parse.length; k++) {
-                var valsi = parse[k][1];
-                var selmaho = parse[k][0];
-                // don't handle cmevla or fu'ivla
-                if (selmaho == "cmevla") {
-                    throw selmaho;
-                } else if (selmaho == "fu'ivla") {
-                    throw selmaho;
-                } else if (selmaho == "lujvo") {
-                    var rafsi = valsi.split("-");
-                    for (var j = 0; j < rafsi.length; j++) {
-                        rafsi[j] = rafsi[j].replace("r", "");
-                    }
-                    for (var j = 0; j < rafsi.length; j++) {
-                        var current_rafsi = rafsi[j];
-                        var entries = definitions.filter(function(o) {
-                            return (o.r != undefined &&
-                                o.r.indexOf(current_rafsi) > -1);
-                        });
-                        if (entries.length > 0) {
-                            var gismu = entries[0].w;
-                            if (j > 0) {
-                                var prev_rafsi = rafsi[j - 1];
-                                var exp = prev_rafsi + "(.)" + current_rafsi;
-                                var pattern = new RegExp(exp, 'g');
-                                var match = pattern.exec(token);
-                                if (match != null && match.length > 1) {
-                                    parts.push(match[1]);
-                                }
-                            }
-                            parts.push(makeSelpehu(gismu, current_rafsi));
-                        }
-                    }
-                } else {
-                    parts.push(makeSelpehu(valsi));
+    function parseRafsi(lujvo, rafsi, n) {
+        var new_tokens = [];
+        var current_rafsi = rafsi[n];
+        var entries = definitions.filter(function(o) {
+            return (o.r != undefined && o.r.indexOf(current_rafsi) > -1);
+        });
+        if (entries.length > 0) {
+            var gismu = entries[0].w;
+            if (n > 0) {
+                var prev_rafsi = rafsi[n - 1];
+                var exp = prev_rafsi + "(.)" + current_rafsi;
+                var pattern = new RegExp(exp, 'g');
+                var match = pattern.exec(lujvo.replace("-", ""));
+                if (match != null && match.length > 1) {
+                    new_tokens.push(match[1]);
                 }
             }
-            var result = parts.join("");
-            tokens[i] = result;
+            var new_token = makeSelpehu(gismu, current_rafsi);
+            new_tokens.push(new_token);
+        } else {
+            new_tokens.push(current_rafsi);
+        }
+        return new_tokens;
+    };
+
+    function parseLujvo(lujvo) {
+        var new_tokens = []
+        var rafsi = lujvo.split("-");
+        for (var i = 0; i < rafsi.length; i++) {
+            var name = rafsi[i];
+            if (name[0] == 'r' || name[name.length - 1] == 'r'){
+                rafsi[i] = name.replace("r", "");
+            }
+        }
+        for (var i = 0; i < rafsi.length; i++) {
+            var parsed_tokens = parseRafsi(lujvo, rafsi, i);
+            new_tokens.push.apply(new_tokens, parsed_tokens);
+        }
+        return new_tokens;
+    };
+
+    function parseToken(token) {
+        var new_tokens = [];
+        try {
+            var tree = camxes.parse(token);
+            // the token is 1 or more lojban valsi
+            for (var i=0; i<tree.length; i++) {
+                var valsi = tree[i][1];
+                var selmaho = tree[i][0];
+                // don't handle cmevla or fu'ivla
+                if (selmaho == "cmevla" || selmaho == "fu'ivla") {
+                    throw selmaho;
+                }
+
+                var entry = getDefinition(valsi.replace("-", ""));
+                if (selmaho == "lujvo" && entry == undefined) {
+                    parsed_tokens = parseLujvo(valsi);
+                    new_tokens.push.apply(new_tokens, parsed_tokens);
+                } else {
+                    new_tokens.push(makeSelpehu(valsi));
+                }
+            }
+            return new_tokens;
         } catch (err) {
-            console.log("ERROR:");
-            console.log(err);
-            tokens[i] = escapeHtml(tokens[i]);
+            // console.log("ERROR:");
+            // console.log(err);
+            return [token];
         }
     };
 
-    function processText(text) {
-        // skip empty messagesa
-        if ($.trim(text) == '') {
-            return text;
+    function parseWord(word) {
+        var new_tokens = [];
+
+        var tokens = word.split(/([^abcdefgijklmnoprstuvxyz'\.]+)/g);
+        for (var i = 0; i < tokens.length; i++) {
+            if (tokens[i].trim() == '') {
+                continue;
+            }
+            sub_tokens = parseToken(tokens[i]);
+            new_tokens.push.apply(new_tokens, sub_tokens);
         }
-        // split the message on whitespace into tokens
-        var tokens = text.split(/(\S+)/g)
-            // bail if there are no tokens
-        if (tokens == null) {
-            return text;
-        }
-        // update each token
-        $.each(tokens, function(i, token) {
-            updateToken(tokens, i, token);
+        return new_tokens;
+    };
+
+    function parseText(text) {
+        var new_tokens = [];
+
+        // split the message on whitespace words
+        var words = text.split(/(\S+)/g)
+
+        $.each(words, function(i, word) {
+            if (word.trim() == '') {
+                new_tokens.push(word);
+            } else {
+                var parsed_tokens = parseWord(word);
+                new_tokens.push.apply(new_tokens, parsed_tokens);
+            }
         });
-        // update message with new tokens
-        var result = tokens.join("");
-        return result;
+
+        return new_tokens;
     }
 
     function getMessages(mutation) {
-        var messages = mutationFind(mutation, ".message-content").not(":has(.pencu-atki)");
-        // if (messages.length == 0) {
-        //     // this is needed because the DOM on OSX is subtlely different
-        //     messages = mutationFind(mutation, ".message-text").not(":has(.pencu-atki)");
-        // }
-        return messages;
+        return mutationFind(mutation, ".message-content")
+            .not(".pencu-akti")
+            .addClass('pencu-akti');
+    };
+
+    pencu.prototype.observer = function(mutation) {
+        var messages = getMessages(mutation);
+        messages.each(function() {
+            var $this = $(this);
+            var contents = $this.contents();
+            var new_contents = [];
+            for (var i = 0; i < contents.length; i++) {
+                var child = contents[i];
+                if (child.nodeType == 8) {
+                    continue;
+                }
+                if (child.nodeType == 3) {
+                    var tokens = parseText(child.data);
+                    for (var j = 0; j < tokens.length; j++) {
+                        new_contents.push(tokens[j]);
+                    }
+                } else {
+                    new_contents.push(child.outerHTML);
+                }
+
+            }
+            var content_results = new_contents.join("");
+            $this.html(content_results);
+        });
+        $('.pencu-selpehu').not('.pencu-vinpa').setupVinpa();
     };
 
     pencu.prototype.stop = function() {
         // Swap every emote back to its original text
-        $(".pencu-atki").each(function() {
+        $(".pencu-selpehu").each(function() {
             var selpehu = $(this);
             selpehu.replaceWith(document.createTextNode(selpehu.text()));
         });
         console.log("la pencu ku sisti");
     };
 
-    pencu.prototype.observer = function(mutation) {
-        console.log("Mutation observed");
-        var messages = getMessages(mutation);
-        messages.each(function() {
-            var $this = $(this);
-            if ($this.hasClass('pencu-atki')) {
-                return;
-            }
-            $this.addClass('pencu-atki');
-            var contents = $this.contents();
-            var new_contents = [];
-            for (var i = 0; i < contents.length; i++) {
-                var child = contents[i];
-                if (child.nodeName == "#text") {
-                    new_contents.push(processText(child.textContent));
-                } else if (child.nodeName != "#comment") {
-                    new_contents.push($(child).html());
-                }
-
-            }
-            $this.html(new_contents.join(""));
-        });
-        messages.setupVinpa();
+    pencu.prototype.start = function() {
+        console.log("la pencu ku tolsti");
+        initJQueryPlugins($);
     };
-    console.log("zbasu loaded!");
-
 })();
