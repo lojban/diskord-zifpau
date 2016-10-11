@@ -172,10 +172,6 @@
         return messages;
     };
 
-    pencu.prototype.start = function() {
-        console.log("la pencu ku tolsti");
-    };
-
     pencu.prototype.stop = function() {
         // Swap every emote back to its original text
         $(".pencu-atki").each(function() {

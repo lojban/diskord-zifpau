@@ -53,4 +53,11 @@ var pencu = function() {};
         console.log("la pencu ku canci");
     };
 
+   pencu.prototype.start = function() {
+        console.log("la pencu ku tolsti");
+    };
+
+    pencu.prototype.observer = function(mutation) { /* override */ };
+    pencu.prototype.stop = function() { /* override */ };
+
 })();
