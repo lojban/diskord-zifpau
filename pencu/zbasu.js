@@ -247,4 +247,7 @@
         console.log("la pencu ku tolsti");
         initJQueryPlugins($);
     };
+
+    initJQueryPlugins($);
+
 })();
