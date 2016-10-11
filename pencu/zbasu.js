@@ -208,6 +208,10 @@
     };
 
     pencu.prototype.observer = function(mutation) {
+        if ($.fn.setupVinpa == undefined) {
+            return;
+        }
+
         var messages = getMessages(mutation);
         messages.each(function() {
             var $this = $(this);
@@ -245,7 +249,6 @@
 
     pencu.prototype.start = function() {
         console.log("la pencu ku tolsti");
-        initJQueryPlugins($);
     };
 
     initJQueryPlugins($);
