@@ -7,6 +7,9 @@ var pencu = function() {};
 (function() {
     "use strict";
 
+    var async_url = "https://rawgit.com/lojban/diskord-zifpau/master/pencu/";
+    var helpers = ["camxes.js", "definitions.js", "lumci.js", "zbasu.js"];
+
     pencu.prototype.getName = function() {
         return "Pencu for Discord";
     };
@@ -27,15 +30,11 @@ var pencu = function() {};
         return "";
     };
 
-    var async_url = "https://rawgit.com/lojban/diskord-zifpau/master/pencu/";
-
     pencu.prototype.getScript = function(filename, handler) {
         $.getScript(async_url + filename, handler);
     }
 
     pencu.prototype.load = function() {
-        helpers = ["camxes.js", "definitions.js", "lumci.js", "zbasu.js"];
-
         var load = function() {
             if (helpers.length) {
                 var next_helper = helpers.shift();
