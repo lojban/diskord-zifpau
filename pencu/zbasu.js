@@ -1,4 +1,4 @@
-(function() {
+var zbasu = (function() {
     var entityMap = {
         "&": "&amp;",
         "<": "&lt;",
@@ -64,23 +64,13 @@
         });
     };
 
-    var setupVinpa = function() {
+    var setupVinpa = function(elements) {
         // `this` is a selpehu
-        $(this)
-            .not(':has(.pencu-vinpa)')
+        elements
+            .not('.pencu-vinpa')
             .addClass('pencu-vinpa')
             .on("mouseover.pencu-vinpa", showVinpa);
     };
-
-    function initJQueryPlugins($) {
-        $.fn.setupVinpa = function() {
-            // find children with a title attribute
-            // not already setup with a vinpa
-            return this
-                .not(':has(.pencu-vinpa)')
-                .each(setupVinpa);
-        };
-    }
 
     function makeSelpehu(valsi, text) {
         if (text == undefined) {
@@ -178,6 +168,9 @@
         var new_tokens = [];
         try {
             var tree = camxes.parse(token);
+            if (tree.length < 1) {
+                raise;
+            }
             // the token is 1 or more lojban valsi
             for (var i = 0; i < tree.length; i++) {
                 var valsi = tree[i][1];
@@ -199,6 +192,7 @@
         } catch (err) {
             // console.log("ERROR:");
             // console.log(err);
+            log("couldn't parse token: " + token);
             return [token];
         }
     };
@@ -206,7 +200,9 @@
     function parseWord(word) {
         var new_tokens = [];
 
-        var tokens = word.split(/([^abcdefgijklmnoprstuvxyz'\.]+)/g);
+        log("word:");
+        log(word);
+        var tokens = word.split(/([^abcdefgijklmnoprstuvxyz'\.]+)/gi);
         for (var i = 0; i < tokens.length; i++) {
             if (tokens[i].trim() == '') {
                 continue;
@@ -242,10 +238,6 @@
     };
 
     pencu.prototype.observer = function(mutation) {
-        if ($.fn.setupVinpa == undefined) {
-            return;
-        }
-
         var messages = getMessages(mutation);
         messages.each(function() {
             var $this = $(this);
@@ -269,7 +261,7 @@
             var content_results = new_contents.join("");
             $this.html(content_results);
         });
-        $('.pencu-selpehu').not('.pencu-vinpa').setupVinpa();
+        setupVinpa($('.pencu-selpehu'));
     };
 
     pencu.prototype.stop = function() {
@@ -284,7 +276,5 @@
     pencu.prototype.start = function() {
         console.log("la pencu ku tolsti");
     };
-
-    initJQueryPlugins($);
 
 })();
