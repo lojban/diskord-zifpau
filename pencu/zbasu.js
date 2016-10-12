@@ -1,4 +1,3 @@
-
 (function() {
     var entityMap = {
         "&": "&amp;",
@@ -99,6 +98,39 @@
         return selpehu;
     };
 
+    function among(v, s) {
+        var i = 0;
+        while (i < s.length)
+            if (s[i++] == v) return true;
+        return false;
+    }
+
+    /* Returns a binary array */
+    function split_rafsi_hyphen(rafsi) {
+        if (rafsi.length >= 4 && among(rafsi[rafsi.length - 1], "rn"))
+            return [rafsi.substring(0, rafsi.length - 1), rafsi[rafsi.length - 1]];
+        else {
+            var i = rafsi.length;
+            while (i > 0 && among(rafsi[i - 1], "y'h")) {
+                i--;
+            }
+            return [rafsi.substring(0, i), rafsi.substring(i)];
+        }
+    }
+
+    /* Returns a string: the rafsi minus any hyphen. */
+    function remove_rafsi_hyphen(rafsi) {
+        if (rafsi.length >= 4 && among(rafsi[rafsi.length - 1], "rn"))
+            return rafsi.substring(0, rafsi.length - 1);
+        else {
+            var i = rafsi.length;
+            while (i > 0 && among(rafsi[i - 1], "y'h")) {
+                i--;
+            }
+            return rafsi.substring(0, i);
+        }
+    }
+
     function parseRafsi(lujvo, rafsi, n) {
         var new_tokens = [];
         var current_rafsi = rafsi[n];
@@ -125,11 +157,13 @@
     };
 
     function parseLujvo(lujvo) {
+        log("lujvo:");
+        log(lujvo)
         var new_tokens = []
         var rafsi = lujvo.split("-");
         for (var i = 0; i < rafsi.length; i++) {
             var name = rafsi[i];
-            if (name[0] == 'r' || name[name.length - 1] == 'r'){
+            if (name[0] == 'r' || name[name.length - 1] == 'r') {
                 rafsi[i] = name.replace("r", "");
             }
         }
@@ -145,7 +179,7 @@
         try {
             var tree = camxes.parse(token);
             // the token is 1 or more lojban valsi
-            for (var i=0; i<tree.length; i++) {
+            for (var i = 0; i < tree.length; i++) {
                 var valsi = tree[i][1];
                 var selmaho = tree[i][0];
                 // don't handle cmevla or fu'ivla
