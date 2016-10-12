@@ -1,4 +1,4 @@
-var definitions = [{"w":"a","t":"cmavo","s":"A","d":"logical connective: sumti afterthought or.","g":"or;sumti or;and/or"},
+var entries = [{"w":"a","t":"cmavo","s":"A","d":"logical connective: sumti afterthought or.","g":"or;sumti or;and/or"},
 {"w":"a'a","t":"cmavo","s":"UI1","d":"attitudinal: attentive - inattentive - avoiding.","n":"See also {jundi}, {rivbi}.","g":"attentive"},
 {"w":"a'acu'i","t":"cmavo-compound","s":"UI*1","d":"attitudinal: attentive - inattentive - avoiding.","g":"inattentive"},
 {"w":"a'anai","t":"cmavo-compound","s":"UI*1","d":"attitudinal: attentive - inattentive - avoiding.","g":"avoiding"},
@@ -20443,13 +20443,17 @@ var definitions = [{"w":"a","t":"cmavo","s":"A","d":"logical connective: sumti a
 {"w":"zviki","t":"experimental gismu","d":"x1 (agent) creates 'hack' x2 (nu/zu'o/si'o) for system/tool x3 from inspiration x4; x2 is an emergent use/purpose for x3, unexpected by the original creators or users","n":"Contains no positive or negative connotations, can refer both to 'cool/elegant hacks' ({se} {mlezvi}) and 'kludge/ugly hacks' ({se} {feglyzvi}). Hack as in 'gain unauthorized or unexpected access to' = {zvijonse}, 'White-hat' hacking = {vudzvi}/{vudzvijonse}, 'black-hat' hacking = {pacyzvi}/{pacyzvijonse}, 'grey-hat' hacking = {norvudzvi}/{norvudzvijonse}. Proposed rafsi: -zvi-. See {kosmu}, {finti}, {jonse}","g":"hack","r":["zviki","zvik"]},
 {"w":"zy","t":"cmavo","s":"BY2","d":"letteral for z.","g":"z"}];
 
-function getDefinition(valsi) {
-    results = definitions.filter(function(o) {
-        return o.w == valsi;
+function find(query) {
+    results = entries.filter(function(o) {
+        return o.w == query;
     });
 
     if (results.length) {
         return results[0].d;
     }
-}
+};
 
+module.exports = {
+    'entries': entries,
+    'find': find,
+};
