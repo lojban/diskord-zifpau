@@ -66,7 +66,7 @@ var us_config = {
     entry: "./entry.us.js",
     output: {
         path: "dist",
-        filename: name + ".userscript.js",
+        filename: name + ".user.js",
         library: "plugin",
     },
     plugins: [
